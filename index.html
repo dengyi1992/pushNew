@@ -1,0 +1,120 @@
+<html>
+<head>
+	<title>Just Try</title>
+	<style >
+    #select_tags{
+	 display:none;
+	 }
+	</style>
+</head>
+<body>
+	<div id="chat">
+	</div>
+	<form id="send-message">
+		推送标题<input size="35" id = "message-title"></br>
+		推送内容<input size="35" id = "message-content"></br>
+		活动链接<input size="35" id = "promotion-link"></br>
+<!-- 		接收对象<input size="35" id = "pm-to"></br>
+ -->
+		发送方式</br>
+		<ul>
+		<label for="sendtype_0"><input type="radio" id="sendtype_0" value="0" name="recipient_type" onclick="hide()" checked="checked"> 广播(所有人)</label>
+		<label for="sendtype_1"><input type="radio" id="sendtype_1" value="1" onclick="show()" name="recipient_type" > 设备标签(Tag)</label></br>
+
+		<li id="select_tags" >
+			<label><input name="tags" type="checkbox" value="0" />理智型 </label> 
+			<label><input name="tags" type="checkbox" value="1" />贪婪型 </label> 
+			<label><input name="tags" type="checkbox" value="2" />冲动型 </label> 
+			<label><input name="tags" type="checkbox" value="3" />舆论型 </label> 
+			<label><input name="tags" type="checkbox" value="4" />VIP型 </label> 
+			<label><input name="tags" type="checkbox" value="5" />谨慎型 </label> 
+			<label><input name="tags" type="checkbox" value="6" />习惯型 </label> 
+			<label><input name="tags" type="checkbox" value="7" />感情型 </label> 
+			<label><input name="tags" type="checkbox" value="8" />随意型 </label> 
+
+
+		</li>
+		</ul>
+
+
+
+
+
+		<input type="submit">
+
+		
+	</form>
+	<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+	jQuery(function($){
+		var socket =io.connect();
+		var $messageForm =$('#send-message');
+		var $messageTitle =$('#message-title');
+		var $messageContent =$('#message-content');
+		var $promotionLink =$('#promotion-link');
+		var $broadcastR =$('#sendtype_0');
+		var $tagsR =$('#sendtype_1');
+		// var $pmTo =$('#pm-to');
+
+		var $chat = $('#chat');
+
+		$messageForm.submit(function(e){
+			e.preventDefault();
+			// socket.emit('send message',$messageBox.val());
+			// socket.emit('send message',{
+			// 	messaget:$messageTitle.val(),
+			// 	messagec:$messageContent.val(),
+			// 	promotionl:$promotionLink.val(),
+			// });
+			// socket.emit('private message',{
+			// 	messaget:$messageTitle.val(),
+			// 	messagec:$messageContent.val(),
+			// 	promotionl:$promotionLink.val(),
+			// 	pmto:$pmTo.val()
+			// });
+		 var recipient_val=$('input:radio[name="recipient_type"]:checked').val();
+		 if (recipient_val==0) {
+		 	// 广播
+		 	socket.emit('send message',{
+				messaget:$messageTitle.val(),
+				messagec:$messageContent.val(),
+				promotionl:$promotionLink.val()
+			});
+		 }else if (recipient_val==1) {
+		 	//组播
+		 	var obj=document.getElementsByName('tags');
+		    for(var i=0; i<obj.length; i++){ 
+		    	if(obj[i].checked==true) 
+		    		socket.emit('type',{
+		    			messaget:$messageTitle.val(),
+		    			messagec:$messageContent.val(),
+		    			promotionl:$promotionLink.val(),
+		    			type:i
+		    		});
+		    } 
+
+		 };
+
+		    
+		    
+		});
+
+		// socket.on('new message',function(data){
+		// 	$chat.append(data.message+"<br/>");
+
+		// });
+	});
+
+	</script>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+	<script> 
+	function show(){
+	  $('#select_tags').css('display','list-item');}
+	function hide(){
+	  $('#select_tags').css('display','none');
+	}
+	</script>
+ 
+</body>
+</html>
